@@ -54,6 +54,9 @@ const App = () => {
         //use build instead of transform
         // first argument is an object
         const result = await ref.current.build({
+            // index.js will be the first file to be bundled in the application
+            //esbuild then starts the bundling process in the browser
+            //it then proceeds to the onresolve step to figure out where the index.js file is stored
             entryPoints: ['index.js'],
             bundle: true,
             write: false,

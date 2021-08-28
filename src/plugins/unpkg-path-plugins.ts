@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild-wasm';
+import axios from 'axios';
 
 export const unpkgPathPlugin = () => {
     // returns an object that is a plugin that works inside of esbuild
@@ -21,8 +22,14 @@ export const unpkgPathPlugin = () => {
                 //if onload has a second argument namespace:'b', it will break because it will only apply to files with a namespace of 'b'
                 //you want to provide a path to tiny-test-pkg
                 //use a crude conditional as an example
-                if(args.path==='index.js') return {path:args.path,namespace:'a'}
-                else if (args.path==='tiny-test-pkg') return{path:'https://unpkg/tiny-test-p'}
+            
+                if(args.path==='index.js') return {path:args.path,namespace:'a'};
+                //for an onResolve call for a file with a path other than index.js you would return an object with namespace and path that is a template string, with the package name, which is args.path, for the path
+                return{
+                    namespace: 'a',
+                    path: `https://unpkg.com/${args.path}`
+                }
+                // else if (args.path==='tiny-test-pkg') return{path:'https://unpkg.com/tiny-test-pkg@1.0.0/index.js',namespace:'a'}
             });
             //when the path to the file that is loaded to be bundled in the app is determined the onLoad step attempts to load the file
             //overrides esbuilds process of loading a file from a file system
@@ -40,12 +47,24 @@ export const unpkgPathPlugin = () => {
                         contents: 
                       //simulate what a user will do in terms of entering an import
                       //in this case we're entering in 'tiny-test-pkg' into where the user's simulated entry would be
-                        `
-              import message from 'tiny-test-pkg';
-              console.log(message);
+                        // this import is coded as an es module `import message from 'tiny-test-pkg'
+                        //because it's a mix of es module and common js, the output is longer than normal. try encoding it as a common js in this app to lessen the output. 
+          `const message = require('tiny-test-pkg')
+            console.log(message);
             `, 
                     };
                 } 
+                //onload needs a conditional to indicate the path to fetch the file.
+                //especially if you're trying to fetch a file other than index.js via the args.path which is where the file path is.
+                //use axios async await 
+                //we need to take the contents of the file that is fetched from the path and assign it to the destructured data that is returned from the axios call. we then return an object to esbuild that instructs it to not access the file system and instead is passed the contents of the file      
+                const{data} = await axios.get(args.path);
+                console.log(data)
+                return{
+                    // esbuild is going to process jsx within the file
+                    loader: 'jsx',
+                    contents: data
+                }
                 // instead of having this hard coded fetch it above off of unpkg
                 // else {
                 //     return {
