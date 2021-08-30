@@ -49,7 +49,7 @@ export const unpkgPathPlugin = () => {
                       //in this case we're entering in 'tiny-test-pkg' into where the user's simulated entry would be
                         // this import is coded as an es module `import message from 'tiny-test-pkg'
                         //because it's a mix of es module and common js, the output is longer than normal. try encoding it as a common js in this app to lessen the output. 
-          `const message = require('tiny-test-pkg')
+          `const message = require('medium-test-pkg')
             console.log(message);
             `, 
                     };
