@@ -54,7 +54,7 @@ const App = () => {
         //use build instead of transform
         // first argument is an object
         const result = await ref.current.build({
-            // index.js will be the first file to be bundled in the application
+            // index.js, this file, will be be bundled in the application with the imported modules that will be processed by onresolve and onload in the plugin that will help bypass esbuild's attempt to access a default file tree, the plugin will instead grab the proper package by grabbing the proper path via a template literal via an axios call.
             //esbuild then starts the bundling process in the browser
             //it then proceeds to the onresolve step to figure out where the index.js file is stored
             entryPoints: ['index.js'],

@@ -24,12 +24,23 @@ export const unpkgPathPlugin = () => {
                 //use a crude conditional as an example
             
                 if(args.path==='index.js') return {path:args.path,namespace:'a'};
+                //use a new url constructor to customize the path
+                //this conditional determines if the file has a ./ or ../ slash in it
+                if(args.path.includes('./')||args.path.includes('../')){
+                    return{
+                        namespace: 'a',
+                        // this is to customize the path in order to grab the file. in this case path will be ./util or ../util it will then be concatenated to the importer in this case it will be the file that is trying to import this path which is this case is args.importer + '/' which is unpkg.com/medium-test-pkg/
+                        // we do not care about the entire object, we just want the url which can be found via .href
+                        path: new URL(args.path, args.importer + '/').href
+                    }
+                }
+
                 //for an onResolve call for a file with a path other than index.js you would return an object with namespace and path that is a template string, with the package name, which is args.path, for the path
                 return{
                     namespace: 'a',
                     path: `https://unpkg.com/${args.path}`
                 }
-                // else if (args.path==='tiny-test-pkg') return{path:'https://unpkg.com/tiny-test-pkg@1.0.0/index.js',namespace:'a'}
+
             });
             //when the path to the file that is loaded to be bundled in the app is determined the onLoad step attempts to load the file
             //overrides esbuilds process of loading a file from a file system
@@ -49,7 +60,7 @@ export const unpkgPathPlugin = () => {
                       //in this case we're entering in 'tiny-test-pkg' into where the user's simulated entry would be
                         // this import is coded as an es module `import message from 'tiny-test-pkg'
                         //because it's a mix of es module and common js, the output is longer than normal. try encoding it as a common js in this app to lessen the output. 
-          `const message = require('medium-test-pkg')
+          `const message = require('nested-test-pkg')
             console.log(message);
             `, 
                     };
@@ -65,13 +76,7 @@ export const unpkgPathPlugin = () => {
                     loader: 'jsx',
                     contents: data
                 }
-                // instead of having this hard coded fetch it above off of unpkg
-                // else {
-                //     return {
-                //         loader: 'jsx',
-                //         contents: 'export default "hi there!"',
-                //     };
-                // }
+
             });
         },
     };
