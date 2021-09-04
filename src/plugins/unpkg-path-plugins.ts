@@ -67,14 +67,18 @@ export const unpkgPathPlugin = () => {
                 } 
                 //onload needs a conditional to indicate the path to fetch the file.
                 //especially if you're trying to fetch a file other than index.js via the args.path which is where the file path is.
-                //use axios async await 
-                //we need to take the contents of the file that is fetched from the path and assign it to the destructured data that is returned from the axios call. we then return an object to esbuild that instructs it to not access the file system and instead is passed the contents of the file      
-                const{data} = await axios.get(args.path);
-                console.log(data)
+                //use axios async await  
+                //we need to take the contents of the file that is fetched from the path and assign it to the destructured data that is returned from the axios call. we then return an object to esbuild that instructs it to not access the file system and instead is passed the contents of the file,
+                //in addition to pulling data you will also pull the property request
+                const{data,request} = await axios.get(args.path);
+                console.log(request)
                 return{
                     // esbuild is going to process jsx within the file
                     loader: 'jsx',
-                    contents: data
+                    contents: data,
+                    //resolveDir instructs esbuild to determine the exact path to the package that is found be it src or whatever extended directory
+                    //first argument instructs it to not grab the index file, second argument tells it to grab the entire url from the response sent back from the server, and .pathname is the path that is separate from the importer path, which is the file path, or url that contains the require import for this file
+                    resolveDir: new URL('./',request.responseURL).pathname
                 }
 
             });
