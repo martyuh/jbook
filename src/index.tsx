@@ -60,7 +60,16 @@ const App = () => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            plugins: [unpkgPathPlugin()]
+            // code that user provided
+            plugins: [unpkgPathPlugin(input)],
+            //gets rid of warnings
+            define:{
+                //this means whenever you find proces.env.node_env inside the code you replace it with the string 'production'
+                // must put in outer quotes or the variable production will replace process.env instead of the string production
+                'process.env.NODE_ENV': '"production"',
+                //if you find the variable global within the code you replace it with the window variable
+                global:'window'
+            }
         });
         console.log(result)
         // setting the state for the code that is transpiled by accessing the first object's text property in outputFiles
