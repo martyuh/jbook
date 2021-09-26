@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 // useRef hook to keep value of service within startService
 import { useState, useEffect, useRef } from 'react';
 import { unpkgPathPlugin } from './plugins/unpkg-path-plugins';
+import { fetchPlugin } from './plugins/fetch-plugin';
 
 //bundlers are used for browsers that don't utilize module systems which are imported/exported
 
@@ -12,6 +13,10 @@ const App = () => {
     const [input, setInput] = useState('');
     // code that is transpiled
     const [code, setCode] = useState('');
+    //ref to the iframe to bypass having to update a code piece of state
+    //used to emit a message into the iframe
+    // assign it to the iframe element
+    const iframe=useRef<any>()
 
 
 
@@ -26,7 +31,8 @@ const App = () => {
         // use a ref to keep a value to any js value inside a component. you will do this by assigning the object returned to ref.current
         ref.current = await esbuild.startService({
             worker: true,
-            wasmURL: '/esbuild.wasm'
+            // rather than hosting the esbuild web assembly binary locally, access unpkg.com to grab it
+            wasmURL: 'https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm',
         })
 
     }
@@ -60,8 +66,9 @@ const App = () => {
             entryPoints: ['index.js'],
             bundle: true,
             write: false,
-            // code that user provided
-            plugins: [unpkgPathPlugin(input)],
+            // input code that user provided
+            // custom plugin to resolve and load paths and files
+            plugins: [unpkgPathPlugin(),fetchPlugin(input)],
             //gets rid of warnings
             define:{
                 //this means whenever you find proces.env.node_env inside the code you replace it with the string 'production'
@@ -73,8 +80,47 @@ const App = () => {
         });
         console.log(result)
         // setting the state for the code that is transpiled by accessing the first object's text property in outputFiles
-        setCode(result.outputFiles[0].text);
+        //text is what contains the transpiled and bundled code
+        //not necessary anymore when referencing the iframe
+        // setCode(result.outputFiles[0].text);
+        
+        //the bundling is complete we take the reference to the iframe and emit a message down into the iframe by using postmessage
+        //iframe.current refers to the iframe element via the reference
+        //post a message to it from the code that is transpiled by accessing the first object's text property in outputFiles 
+        //text is what contains the transpiled and bundled code which will contain whatever input is entered by the user
+        iframe.current.contentWindow.postMessage(result.outputFiles[0].text,'*')
+
+
+        //execute arbitrary js contained in a string is to you eval() which means in most situations can be used to execute the js that is passed in from the bundled result
+        //wrap in a try error catch to prevent erroneous code
+        //don't need this when running out of an iframe
+        // try{
+        //     // warning, an async call will not allow this try catch block to catch an error
+        //     eval(result.outputFiles[0].text)
+        // }catch(err){
+        //     alert(err)
+        // }
     }
+    // how to get html code into iframe
+    //the script element will be passed to the iframe where the html will intepret the javascript code that is passed in from the bundler.
+    //code for event listener to listen for input into parent html
+    //there will be skeleton of an html document
+    //eval evaluates js code represented as a string
+    //the results of the input is then displayed. console.log(1) will display as 1 in the console log. 
+    const html =`
+        <html>
+        <head></head>
+        <body>
+        <div id="root"></div>
+        <script>
+        window.addEventListener('message',(event)=>{
+            eval(event.data);
+        },false)
+        </script>
+        </body>
+        </html>
+
+    `
 
     return <div>
         <textarea onChange={e => setInput(e.target.value)} value={input}></textarea>
@@ -83,8 +129,16 @@ const App = () => {
         </div>
         {/* pre makes the code look like code */}
         <pre>{code}</pre>
+        {/* embed an html document inside of another with iframe */}
+        {/* sandbox property with empty string prevents communication between parent and child. 'allow-same-origin' with the sandbox allows communications */}
+        {/* take html variable below and assign it to the srcDoc property to store the html code as the property.*/}
+        {/* all that is in the iframe is the script element that is passed in. iframe will find the script tag and execute the code within it*/} 
+        {/* sandbox with an empty string prohibits running js through scripts, alerts, devices */}
+        <iframe ref={iframe} sandbox='allow-scripts' srcDoc={html}/>
     </div >
 }
+
+
 
 ReactDOM.render(
     <App />,
