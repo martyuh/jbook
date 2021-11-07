@@ -1,0 +1,22 @@
+.editor-wrapper {
+  position: relative;
+  height: 100%;
+}
+
+.editor-wrapper .button-format {
+  /* positions button at the top right hand side of the wrapper element */
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  /* shows in front of the editor */
+  z-index: 20;
+  /* button will show as invisible until you hover over editor*/
+  opacity: 0;
+  /* how long it will take to transition opacity */
+  transition: opacity 0.3s;
+}
+
+/* complete the transition */
+.editor-wrapper:hover .button-format {
+  opacity: 1;
+}
