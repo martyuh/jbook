@@ -1,14 +1,14 @@
 //wrap all the logic around esbuild in this file
 import * as esbuild from 'esbuild-wasm'
-import { unpkgPathPlugin } from '../plugins/unpkg-path-plugins';
-import { fetchPlugin } from '../plugins/fetch-plugin';
+import { unpkgPathPlugin } from './plugins/unpkg-path-plugins';
+import { fetchPlugin } from './plugins/fetch-plugin';
 
 //variable is service with the type attribute of esbuild.Service
 let service: esbuild.Service;
 
 //export a function that takes code in as a string in that was entered into the code editor
 //async function because it is waiting for a response from esbuild      
-export default async (rawCode:string) => {
+const bundle =  async (rawCode:string) => {
         // initialize esbuild service, giving it the opportunity to fetch the webassembly bundle that is placed in the public directory.
         //get back a service object
         //use the transform and build functions athat are returned
@@ -50,3 +50,5 @@ export default async (rawCode:string) => {
 
         return result.outputFiles[0].text
 }
+
+export default bundle 
