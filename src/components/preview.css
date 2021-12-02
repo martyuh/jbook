@@ -1,0 +1,34 @@
+.preview-wrapper {
+  position: relative;
+  height: 100%;
+  /* this allows the iframe to fill in when it is resized */
+  flex-grow: 1;
+}
+
+.preview-wrapper iframe {
+  height: 100%;
+
+  /* this allows the iframe to fill the preview-wrapper to 100 percent */
+  width: 100%;
+}
+
+/* let's the error be displayed over preview window */
+.preview-error {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: red;
+}
+
+/* psuedo element, a fake element into the dom */
+/* this element is only shown when cell size is being actively changed */
+/* this should only be displayed when the user is dragging the resizer. so you use the classname that is assigned to the body that only shows up when the cell is being resized. this will operate as a condtional and will only display this when it is being dragged*/
+.react-draggable-transparent-selection .preview-wrapper:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+}

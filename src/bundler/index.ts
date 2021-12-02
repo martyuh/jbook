@@ -25,9 +25,12 @@ const bundle =  async (rawCode:string) => {
                 wasmURL: 'https://unpkg.com/esbuild-wasm@0.8.27/esbuild.wasm',
             })
         }
+        
         //use build instead of transform
         //when build is called we get a result object in return, assign it to the result variable
         //you can then return the result object by accessing the outputfiles property, and inside that array the first element has a text property and that is the output of the bundling and transpiling
+        //error handling from invalid code that is not async or sync it is handled here
+        try{
         const result = await service.build({
             // index.js, this file, will be be bundled in the application with the imported modules that will be processed by onresolve and onload in the plugin that will help bypass esbuild's attempt to access a default file tree, the plugin will instead grab the proper package by grabbing the proper path via a template literal via an axios call.
             //esbuild then starts the bundling process in the browser
@@ -47,8 +50,18 @@ const bundle =  async (rawCode:string) => {
                 global:'window'
             }
         });
+        //to be able to decipher whether or not a bundled code is returned which is a string from an error which is also a string, return an object that will help determine whether the string returned is an error or the bundled code
+        return {
+            code:result.outputFiles[0].text,
+            err: ''
+        }
+    }catch(err){
+        return {
+            code:'',
+            err: err.message
+        }
+    }
 
-        return result.outputFiles[0].text
 }
 
 export default bundle 

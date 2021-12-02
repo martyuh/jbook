@@ -81,7 +81,7 @@ const CodeEditor:React.FC<CodeEditorProps> = ({onChange,initialValue}) => {
     // initial value
     value = {initialValue}
     language='javascript' 
-    height='500px'
+    height='100%'
     // must use vs-dark instead of dark
     theme='vs-dark'
     options={{

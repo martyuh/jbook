@@ -1,6 +1,8 @@
 .editor-wrapper {
   position: relative;
   height: 100%;
+  /* let the wrapper take up 100 percent but leave 10px for the handle */
+  width: calc(100% - 10px);
 }
 
 .editor-wrapper .button-format {
