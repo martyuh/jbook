@@ -29,7 +29,7 @@ const bundle =  async (rawCode:string) => {
         //use build instead of transform
         //when build is called we get a result object in return, assign it to the result variable
         //you can then return the result object by accessing the outputfiles property, and inside that array the first element has a text property and that is the output of the bundling and transpiling
-        //error handling from invalid code that is not async or sync it is handled here
+        //error handling from invalid code that causes a bundling error that is not async or sync it is handled here
         try{
         const result = await service.build({
             // index.js, this file, will be be bundled in the application with the imported modules that will be processed by onresolve and onload in the plugin that will help bypass esbuild's attempt to access a default file tree, the plugin will instead grab the proper package by grabbing the proper path via a template literal via an axios call.
@@ -55,10 +55,10 @@ const bundle =  async (rawCode:string) => {
             code:result.outputFiles[0].text,
             err: ''
         }
-    }catch(err){
+    }catch(err:any){
         return {
             code:'',
-            err: err.message
+            err: err.message,
         }
     }
 
