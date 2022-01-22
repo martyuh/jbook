@@ -3,16 +3,30 @@ import './text-editor.css'
 import {useState,useEffect,useRef} from 'react'
 // installed markdown editor
 import MDEditor from "@uiw/react-md-editor";
+import {Cell} from '../state'
+//action creator
+import {useActions} from '../hooks/use-actions'
 
+//interface to annotate the type of the props passed in
+interface TextEditorProps {
+    //the cell prop will have a type Cell, Cell.content contains the actual text from the user that is entered into the texteditor
+    //call actioncreator to update the content property of the cell
+    cell:Cell;
+}
 
-const TextEditor: React.FC = () =>{
+//type annotate the TextEditorProps interface 
+//receive cell as a prop
+const TextEditor: React.FC<TextEditorProps> = ({cell}) =>{
     //to prevent eventbubbling a ref is  assigned to the div element to determine whether the target clicked is within the div element. if so editing remains true
     //annotate with htmldivelement or null
     const ref = useRef<HTMLDivElement|null>(null)
 // state to determine whether the edit mode component is showing false would set it to not displaying
     const[editing,setEditing]=useState(false)
     //to keep track of what is typed into the editor to display in the preview window
-    const [value,setValue] = useState('# Header')
+    // updateCells is from actionCreators from useActions
+    // use updatecell to update the content property in cell that user types in
+    const {updateCell} = useActions();
+
     //to detect click in body of the dom. 
     useEffect(()=>{
         // listener function that is called when the user clicks anywhere inside the document
@@ -44,15 +58,18 @@ const TextEditor: React.FC = () =>{
         return(
         <div className='text-editor' ref={ ref}>
             {/* if v is undefined it can be typed as an empty string */}
-            <MDEditor value={value} onChange={(v)=>setValue(v||'')}/>
+            {/* when user enters text onchange is called and the actioncreator fires  */}
+            {/* it finds the cell via id and updates the value that the user types in or is undefined if that is the case it defaults to an empty string*/}
+            <MDEditor value={cell.content} onChange={(v)=>updateCell(cell.id, v || '')}/>
         </div>);}
 
     return (
     // if markdown is clicked editing state will be toggled to true
     <div className='text-editor card' onClick={()=>setEditing(true)}>
         <div className="card-content">
-        {/* preview of the markdown, value is state with what is being typed into the text editor  */}
-        <MDEditor.Markdown source={value}/>
+        {/* preview of the markdown, cell.content is state with what is being typed into the text editor  */}
+        {/* if cell.content is empty truthy conditional will allow it to show text 'click to edit' */}
+        <MDEditor.Markdown source={cell.content || 'Click to edit'}/>
         </div>
         </div>) 
 }

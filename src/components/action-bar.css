@@ -1,0 +1,6 @@
+.action-bar {
+  /* position to the right */
+  position: absolute;
+  top: 0;
+  right: 0;
+}

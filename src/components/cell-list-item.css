@@ -1,0 +1,4 @@
+.cell-list-item {
+  /* allows action bar to be absolute to the relative cell list item */
+  position: relative;
+}
