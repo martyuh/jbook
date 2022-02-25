@@ -1,4 +1,12 @@
 .cell-list-item {
   /* allows action bar to be absolute to the relative cell list item */
   position: relative;
+  /* margin on all sides of cell list item */
+  margin: 40px 10px;
+}
+
+.action-bar-wrapper {
+  height: 30px;
+  width: 100%;
+  background-color: #37414b;
 }

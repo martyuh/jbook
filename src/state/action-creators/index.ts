@@ -41,7 +41,7 @@ export const moveCell = (id:string, direction:Direction):MoveCellAction => {
     }
 }
 // parameters of id and celltype will be passed to id and type and returned as an action
-export const insertCellBefore = (id:string, cellType:CellTypes):InsertCellBeforeAction => {
+export const insertCellBefore = (id:string|null, cellType:CellTypes):InsertCellBeforeAction => {
     return{
         type:ActionType.INSERT_CELL_BEFORE,
         payload:{

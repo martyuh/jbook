@@ -1,0 +1,38 @@
+.add-cell {
+  position: relative;
+  /* not visible until hovered over */
+  opacity: 0;
+  /* use ease-in and delay transition by 0.1s to prevent quick pop in during hover */
+  transition: opacity 0.3s ease-in 0.1s;
+  margin: 8px 0;
+}
+
+.add-cell:hover {
+  /* once hovered over full opacity with a transition of .3 seconds  */
+  opacity: 1;
+}
+
+/* no space means element must have both classnames for style to present */
+.add-cell.force-visible {
+  opacity: 1;
+}
+
+.add-cell .divider {
+  position: absolute;
+  top: 50%;
+  bottom: 50%;
+  left: 2.5%;
+  right: 2.5%;
+  border-bottom: 1px solid gray;
+  width: 90%;
+  z-index: -1;
+}
+
+.add-cell .add-buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.add-cell .add-buttons button {
+  margin: 0 20px;
+}
