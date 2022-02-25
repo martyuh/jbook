@@ -1,11 +1,10 @@
 import {ActionType} from '../action-types';
 //you cannot access the action interfaces through Action import, rather you have to export and import each interface separately
 import { 
-    Action, 
     UpdateCellAction,
     DeleteCellAction,
     MoveCellAction,
-    InsertCellBeforeAction,
+    InsertCellAfterAction,
     Direction} 
     from '../actions';
 import { CellTypes } from '../cell';
@@ -41,9 +40,9 @@ export const moveCell = (id:string, direction:Direction):MoveCellAction => {
     }
 }
 // parameters of id and celltype will be passed to id and type and returned as an action
-export const insertCellBefore = (id:string|null, cellType:CellTypes):InsertCellBeforeAction => {
+export const insertCellAfter = (id:string|null, cellType:CellTypes):InsertCellAfterAction => {
     return{
-        type:ActionType.INSERT_CELL_BEFORE,
+        type:ActionType.INSERT_CELL_AFTER,
         payload:{
             id,
             // celltypes of code or text will be returned with the payload

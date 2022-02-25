@@ -23,11 +23,11 @@ export interface DeleteCellAction {
     payload: string;
 }
 
-export interface InsertCellBeforeAction {
-    type: ActionType.INSERT_CELL_BEFORE;
-    // id and type of the cell that you want this new cell before
+export interface InsertCellAfterAction {
+    type: ActionType.INSERT_CELL_AFTER;
+    // id and type of the cell that you want this new cell AFTER
     payload: {
-        //id of the cell that you want to create the new cell before
+        //id of the cell that you want to create the new cell AFTER
         //if it is null the cell will be added to the end
         id: string | null;
         // imported from cell.ts
@@ -50,5 +50,5 @@ export interface UpdateCellAction {
 export type Action = 
 MoveCellAction
 | DeleteCellAction
-| InsertCellBeforeAction
+| InsertCellAfterAction
 | UpdateCellAction;
